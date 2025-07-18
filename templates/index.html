@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Buzz! Controller</title>
+    <style>
+        /* Add some basic styling for the buttons */
+        body { text-align: center; }
+        .buzzer-buttons button {
+            width: 100px;
+            height: 100px;
+            margin: 10px;
+            font-size: 18px;
+            border-radius: 50%;
+        }
+        #red { background-color: red; }
+        #blue { background-color: blue; color: white; }
+        #orange { background-color: orange; }
+        #green { background-color: green; color: white; }
+        #yellow { background-color: yellow; }
+    </style>
+</head>
+<body>
+    <h1>Buzz! Controller</h1>
+    <div>
+        <label for="player">Select Player:</label>
+        <select id="player">
+            <option value="1">Player 1</option>
+            <option value="2">Player 2</option>
+            <option value="3">Player 3</option>
+            <option value="4">Player 4</option>
+            <option value="5">Player 5</option>
+            <option value="6">Player 6</option>
+            <option value="7">Player 7</option>
+            <option value="8">Player 8</option>
+            <!-- Add more players as needed -->
+        </select>
+    </div>
+    <div class="buzzer-buttons">
+        <button id="red" onclick="buzz('red')">Red</button>
+        <button id="blue" onclick="buzz('blue')">Blue</button>
+        <button id="orange" onclick="buzz('orange')">Orange</button>
+        <button id="green" onclick="buzz('green')">Green</button>
+        <button id="yellow" onclick="buzz('yellow')">Yellow</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script>
+        var socket = io();
+
+        function buzz(color) {
+            var player = document.getElementById('player').value;
+            socket.emit('buzz', { player: parseInt(player), color: color });
+        }
+    </script>
+</body>
+</html>
