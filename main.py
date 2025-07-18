@@ -10,9 +10,13 @@ keyboard = Controller()
 player_keys = {
     1: {'red': 'q', 'blue': 'w', 'orange': 'e', 'green': 'r', 'yellow': 't'},
     2: {'red': 'y', 'blue': 'u', 'orange': 'i', 'green': 'o', 'yellow': 'p'},
-    # Add more players as needed
+    3: {'red': 'a', 'blue': 's', 'orange': 'd', 'green': 'f', 'yellow': 'g'},
+    4: {'red': 'h', 'blue': 'j', 'orange': 'k', 'green': 'l', 'yellow': ';'},
+    5: {'red': 'z', 'blue': 'x', 'orange': 'c', 'green': 'v', 'yellow': 'b'},
+    6: {'red': '1', 'blue': '2', 'orange': '3', 'green': '4', 'yellow': '5'},
+    7: {'red': '6', 'blue': '7', 'orange': '8', 'green': '9', 'yellow': '0'},
+    8: {'red': '7', 'blue': '8', 'orange': '9', 'green': '+', 'yellow': '-'},
 }
-
 @app.route('/')
 def index():
     return render_template('index.html')

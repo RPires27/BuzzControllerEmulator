@@ -2,14 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- This is the crucial part for mobile responsiveness and disabling zoom -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
     <title>Buzz! Controller</title>
     <style>
         /* Basic Resets and Body Styling */
         * {
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent; /* Removes blue highlight on tap in Chrome */
+            -webkit-tap-highlight-color: transparent;
         }
 
         html, body {
@@ -17,11 +16,10 @@
             height: 100%;
             margin: 0;
             padding: 0;
-            overflow: hidden; /* Prevents scrolling */
+            overflow: hidden; 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background-color: #1f1f1f;
             color: #f0f0f0;
-            /* This CSS property is key to preventing double-tap to zoom */
             touch-action: manipulation;
         }
 
@@ -58,7 +56,7 @@
 
         /* Big Red "Buzz" Button */
         .buzz-button-container {
-            width: 60vmin; /* vmin = smaller of viewport width or height */
+            width: 60vmin;
             height: 60vmin;
             max-width: 250px;
             max-height: 250px;
@@ -89,7 +87,6 @@
         }
 
         .color-button {
-            /* This creates a perfect square that fills the grid cell */
             width: 100%;
             padding-bottom: 100%;
             height: 0;
@@ -123,9 +120,12 @@
             <select id="player">
                 <option value="1">1</option>
                 <option value="2">2</option>
-                <!-- Add more players here if you configured them in Python -->
-                <!-- <option value="3">3</option> -->
-                <!-- <option value="4">4</option> -->
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
             </select>
         </div>
 
@@ -142,7 +142,6 @@
 
     </div>
 
-    <!-- The JavaScript part remains the same -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script>
         var socket = io();
