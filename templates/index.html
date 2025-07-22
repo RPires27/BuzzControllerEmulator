@@ -1,156 +1,245 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0"
+    />
     <title>Buzz! Controller</title>
     <style>
-        /* Basic Resets and Body Styling */
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+      /* Basic Resets and Body Styling */
+      * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
 
-        html, body {
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: hidden; 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: #1f1f1f;
-            color: #f0f0f0;
-            touch-action: manipulation;
-        }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        background-color: #1f1f1f;
+        color: #f0f0f0;
+        touch-action: manipulation;
+      }
 
-        /* Main container to center everything */
-        .controller-container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-evenly;
-            align-items: center;
-            padding: 20px;
-        }
+      /* Fullscreen toggle button */
+      .fullscreen-toggle {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: 40px;
+        height: 40px;
+        background-color: rgba(68, 68, 68, 0.8);
+        border: none;
+        border-radius: 8px;
+        color: #f0f0f0;
+        font-size: 20px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.2s ease;
+        z-index: 1000;
+      }
 
-        /* Player Selector Styling */
-        .player-selector {
-            width: 100%;
-            text-align: center;
-        }
+      .fullscreen-toggle:hover {
+        background-color: rgba(85, 85, 85, 0.9);
+      }
 
-        .player-selector label {
-            font-size: 1.2em;
-            margin-right: 10px;
-        }
+      .fullscreen-toggle:active {
+        transform: scale(0.95);
+      }
 
-        .player-selector select {
-            font-size: 1.2em;
-            padding: 8px;
-            border-radius: 8px;
-            border: none;
-            background-color: #444;
-            color: #fff;
-        }
+      /* Main container to center everything */
+      .controller-container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        align-items: center;
+        padding: 20px;
+      }
 
-        /* Big Red "Buzz" Button */
-        .buzz-button-container {
-            width: 60vmin;
-            height: 60vmin;
-            max-width: 250px;
-            max-height: 250px;
-        }
+      /* Player Selector Styling */
+      .player-selector {
+        width: 100%;
+        text-align: center;
+      }
 
-        .buzz-button {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            border: 5px solid #c00;
-            background: linear-gradient(145deg, #ff4d4d, #d60000);
-            box-shadow: 0 8px 15px rgba(0,0,0,0.4);
-            font-size: 8vmin;
-            color: white;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-            cursor: pointer;
-            transition: transform 0.05s ease;
-        }
+      .player-selector label {
+        font-size: 1.2em;
+        margin-right: 10px;
+      }
 
-        /* Container for the four smaller color buttons */
-        .color-buttons-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            width: 70vmin;
-            max-width: 300px;
-        }
+      .player-selector select {
+        font-size: 1.2em;
+        padding: 8px;
+        border-radius: 8px;
+        border: none;
+        background-color: #444;
+        color: #fff;
+      }
 
-        .color-button {
-            width: 100%;
-            padding-bottom: 100%;
-            height: 0;
-            position: relative;
-            border-radius: 15px;
-            box-shadow: 0 5px 10px rgba(0,0,0,0.3);
-            cursor: pointer;
-            transition: transform 0.05s ease;
-        }
+      /* Big Red "Buzz" Button */
+      .buzz-button-container {
+        width: 60vmin;
+        height: 60vmin;
+        max-width: 250px;
+        max-height: 250px;
+      }
 
-        /* Giving each button its color */
-        #blue { background-color: #007bff; }
-        #orange { background-color: #fd7e14; }
-        #green { background-color: #28a745; }
-        #yellow { background-color: #ffc107; }
+      .buzz-button {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 5px solid #c00;
+        background: linear-gradient(145deg, #ff4d4d, #d60000);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+        font-size: 8vmin;
+        color: white;
+        font-weight: bold;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        cursor: pointer;
+        transition: transform 0.05s ease;
+      }
 
-        /* Pressed state for all buttons */
-        .buzz-button:active, .color-button:active {
-            transform: scale(0.95);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-        }
+      /* Container for the four smaller color buttons */
+      .color-buttons-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        width: 70vmin;
+        max-width: 300px;
+      }
 
+      .color-button {
+        width: 100%;
+        padding-bottom: 100%;
+        height: 0;
+        position: relative;
+        border-radius: 15px;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+        cursor: pointer;
+        transition: transform 0.05s ease;
+      }
+
+      /* Giving each button its color */
+      #blue {
+        background-color: #007bff;
+      }
+      #orange {
+        background-color: #fd7e14;
+      }
+      #green {
+        background-color: #28a745;
+      }
+      #yellow {
+        background-color: #ffc107;
+      }
+
+      /* Pressed state for all buttons */
+      .buzz-button:active,
+      .color-button:active {
+        transform: scale(0.95);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+      }
     </style>
-</head>
-<body>
-
+  </head>
+  <body>
+    <button
+      class="fullscreen-toggle"
+      onclick="toggleFullscreen()"
+      title="Toggle Fullscreen"
+    >
+      ⛶
+    </button>
     <div class="controller-container">
-        
-        <div class="player-selector">
-            <label for="player">Player:</label>
-            <select id="player">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
-                <option value="8">8</option>
-            </select>
-        </div>
+      <div class="player-selector">
+        <label for="player">Player:</label>
+        <select id="player">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+        </select>
+      </div>
 
-        <div class="buzz-button-container" onclick="buzz('red')">
-            <button class="buzz-button">BUZZ</button>
-        </div>
+      <div class="buzz-button-container" onclick="buzz('red')">
+        <button class="buzz-button">BUZZ</button>
+      </div>
 
-        <div class="color-buttons-container">
-            <div id="blue" class="color-button" onclick="buzz('blue')"></div>
-            <div id="orange" class="color-button" onclick="buzz('orange')"></div>
-            <div id="green" class="color-button" onclick="buzz('green')"></div>
-            <div id="yellow" class="color-button" onclick="buzz('yellow')"></div>
-        </div>
-
+      <div class="color-buttons-container">
+        <div id="blue" class="color-button" onclick="buzz('blue')"></div>
+        <div id="orange" class="color-button" onclick="buzz('orange')"></div>
+        <div id="green" class="color-button" onclick="buzz('green')"></div>
+        <div id="yellow" class="color-button" onclick="buzz('yellow')"></div>
+      </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script>
-        var socket = io();
+      var socket = io();
 
-        function buzz(color) {
-            var player = document.getElementById('player').value;
-            socket.emit('buzz', { player: parseInt(player), color: color });
+      function buzz(color) {
+        var player = document.getElementById("player").value;
+        socket.emit("buzz", { player: parseInt(player), color: color });
+      }
+
+      function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+          // Enter fullscreen
+          if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen();
+          } else if (document.documentElement.webkitRequestFullscreen) {
+            document.documentElement.webkitRequestFullscreen();
+          } else if (document.documentElement.msRequestFullscreen) {
+            document.documentElement.msRequestFullscreen();
+          }
+        } else {
+          // Exit fullscreen
+          if (document.exitFullscreen) {
+            document.exitFullscreen();
+          } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+          } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+          }
         }
-    </script>
+      }
 
-</body>
+      // Update button text based on fullscreen state
+      document.addEventListener("fullscreenchange", updateFullscreenButton);
+      document.addEventListener(
+        "webkitfullscreenchange",
+        updateFullscreenButton
+      );
+      document.addEventListener("msfullscreenchange", updateFullscreenButton);
+
+      function updateFullscreenButton() {
+        const button = document.querySelector(".fullscreen-toggle");
+        if (
+          document.fullscreenElement ||
+          document.webkitFullscreenElement ||
+          document.msFullscreenElement
+        ) {
+          button.innerHTML = "⛶";
+          button.title = "Exit Fullscreen";
+        } else {
+          button.innerHTML = "⛶";
+          button.title = "Enter Fullscreen";
+        }
+      }
+    </script>
+  </body>
 </html>
