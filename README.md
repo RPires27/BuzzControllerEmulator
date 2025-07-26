@@ -4,82 +4,21 @@ A web-based controller designed for playing Buzz! quiz games on the PCSX2 emulat
 
 ## Features
 
-- **Native Gamepad Emulation**: Uses `vgamepad` to create virtual Xbox 360 controllers, offering better compatibility and performance than keyboard simulation.
-- **Multi-player Support**: Up to 8 players can connect and play simultaneously, each with their own virtual gamepad.
-- **Mobile-friendly**: Responsive design optimized for touch devices.
-- **Real-time Communication**: Instant button presses via WebSocket.
-- **Color-coded Buttons**: Standard Buzz! controller layout (Red/Buzz, Blue, Orange, Green, Yellow).
-- **Cross-platform**: Works on any device with a web browser, with server support for both Windows and Linux.
+- **Native Gamepad Emulation**: Uses `vgamepad` to create virtual Xbox 360 controllers, offering better compatibility and performance than keyboard simulation
+- **Multi-player Support**: Up to 8 players can connect and play simultaneously, each with their own virtual gamepad
+- **Mobile-friendly**: Responsive design optimized for touch devices
+- **Real-time Communication**: Instant button presses via WebSocket
+- **Color-coded Buttons**: Standard Buzz! controller layout (Red/Buzz, Blue, Orange, Green, Yellow)
+- **Cross-platform**: Works on any device with a web browser, with server support for both Windows and Linux
 
 ## How It Works
 
 The system consists of:
 
-1.  A Flask web server with SocketIO for real-time communication.
-2.  A mobile-responsive web interface for player interaction.
-3.  A `vgamepad` backend that creates and manages 8 virtual Xbox 360 controllers.
-4.  **PCSX2 Integration**: Player inputs from the web interface are translated into gamepad button presses that PCSX2 can recognize natively.
-
-## System Requirements
-
-Before running the application, you must install the necessary drivers for `vgamepad`.
-
-### Windows
-
-1.  **Install ViGEmBus Driver**: Download and install the latest version of [ViGEmBus](https://github.com/ViGEm/ViGEmBus/releases). This is required for creating virtual gamepads.
-
-### Linux
-
-1.  **Install Kernel Headers and Development Tools**:
-    ```bash
-    sudo apt update
-    sudo apt install -y build-essential python3-dev linux-headers-$(uname -r)
-    ```
-2.  **Install `libusb` and `libudev`**:
-    ```bash
-    sudo apt install -y libusb-1.0-0-dev libudev-dev
-    ```
-3.  **Enable the `uinput` Kernel Module**: This module allows userspace programs to create virtual input devices.
-    ```bash
-    sudo modprobe uinput
-    ```
-4.  **Set Permissions**: Add your user to the `input` group to grant permissions to manage virtual input devices.
-    ```bash
-    sudo usermod -a -G input $USER
-    ```
-    **Important**: You must **log out and log back in** for this change to take effect.
-
-## PCSX2 Setup Guide
-
-With the migration to `vgamepad`, you no longer need to map individual keyboard keys. Instead, you will configure PCSX2 to use the virtual Xbox 360 controllers.
-
-### Prerequisites
-
-- PCSX2 emulator installed and configured.
-- Buzz! game ISO.
-- This controller application running on the same computer as PCSX2.
-- System requirements from the section above are met.
-
-### PCSX2 Configuration
-
-1.  **Start the Buzz! Controller Application**: Run `uv run python main.py` before launching PCSX2. This will create the 8 virtual gamepads.
-2.  **Open PCSX2 Controller Settings**:
-    - Launch PCSX2 and go to `Settings` -> `Controllers`.
-3.  **Enable Multitap**:
-    - To play with more than 2 players, you need to enable the multitap. In the controller settings, for `Port 1`, select `Multitap 1`. This will enable up to 4 players on the first port. For players 5-8, enable `Multitap 2` on `Port 2`.
-4.  **Map the Virtual Controllers**:
-    - Select `Controller Port 1` (or the port you enabled multitap on).
-    - For the `Device API`, select `XInput`.
-    - In the `Device` dropdown, you should see multiple "Xbox 360 Controller" entries. Select the first one for Player 1.
-    - PCSX2 should automatically map the buttons. The button mapping is as follows:
-        - **Red (Buzz)** -> `A` Button
-        - **Blue** -> `X` Button
-        - **Orange** -> `B` Button
-        - **Green** -> `Y` Button
-        - **Yellow** -> `Right Shoulder`
-    - Repeat this process for each player, selecting a different "Xbox 360 Controller" from the device list for each port (Pad 1, Pad 2, etc.).
-5.  **Save Configuration**:
-    - Click `Apply` or `OK` to save your settings.
+1. A Flask web server with SocketIO for real-time communication
+2. A mobile-responsive web interface for player interaction
+3. A `vgamepad` backend that creates and manages 8 virtual Xbox 360 controllers
+4. **PCSX2 Integration**: Player inputs from the web interface are translated into gamepad button presses that PCSX2 can recognize natively
 
 ## Installation
 
@@ -89,55 +28,236 @@ With the migration to `vgamepad`, you no longer need to map individual keyboard 
 - `uv` - A fast Python package installer and resolver
 - PCSX2 emulator with a Buzz! game
 
-### Using uv (Recommended)
+### Step 1: Clone the Repository
 
-1.  **Clone the Repository**:
-    ```bash
-    git clone https://github.com/RPires27/BuzzControllerEmulator
-    cd BuzzControllerEmulator
-    ```
-2.  **Install Dependencies with uv**:
-    ```bash
-    uv sync
-    ```
-3.  **Activate the Virtual Environment**:
-    ```bash
-    source .venv/bin/activate  # On Unix/macOS
-    .venv\Scripts\activate     # On Windows
-    ```
-4.  **Run the Application**:
-    ```bash
-    uv run python main.py
-    ```
+```bash
+git clone https://github.com/RPires27/BuzzControllerEmulator
+cd BuzzControllerEmulator
+```
 
-## Usage with PCSX2
+### Step 2: Install Dependencies
 
-1.  **Start the Controller**: Run the application. You should see a confirmation that the virtual gamepads were initialized.
-2.  **Start PCSX2**: Launch PCSX2 and load your Buzz! game.
-3.  **Configure PCSX2**: Follow the new PCSX2 setup guide above.
-4.  **Access the Controller**: Open a web browser and navigate to `http://localhost:5000`.
-5.  **Connect Devices**: Players can connect from any device on the same network by navigating to `http://<your-ip>:5000`.
+```bash
+uv sync
+```
+
+**Note**: On Windows, `vgamepad` will automatically prompt you to install the required ViGEmBus driver during the dependency installation. Simply follow the installer prompts.
+
+### Step 3: Platform-Specific Setup
+
+#### Windows
+
+No additional setup required! The `vgamepad` library will handle driver installation automatically during `uv sync`.
+
+#### Linux
+
+The installation process varies depending on your distribution:
+
+##### Debian-based Distributions (Ubuntu, Debian, Linux Mint, etc.)
+
+```bash
+# Install required development packages
+sudo apt update
+sudo apt install -y build-essential python3-dev linux-headers-$(uname -r)
+
+# Install USB and device libraries
+sudo apt install -y libusb-1.0-0-dev libudev-dev
+
+# Enable the uinput kernel module
+sudo modprobe uinput
+
+# Add it to load automatically on boot
+echo 'uinput' | sudo tee -a /etc/modules
+
+# Add your user to the input group
+sudo usermod -a -G input $USER
+
+# Set proper permissions for uinput device
+sudo tee /etc/udev/rules.d/99-uinput.rules > /dev/null <<EOF
+KERNEL=="uinput", MODE="0660", GROUP="input", OPTIONS+="static_node=uinput"
+EOF
+
+# Reload udev rules
+sudo udevadm control --reload-rules
+```
+
+##### Arch-based Distributions (Arch Linux, Manjaro, EndeavourOS, etc.)
+
+```bash
+# Install required development packages
+sudo pacman -S base-devel python linux-headers
+
+# Install USB and device libraries
+sudo pacman -S libusb libudev0-shim
+
+# Enable the uinput kernel module
+sudo modprobe uinput
+
+# Add it to load automatically on boot
+echo 'uinput' | sudo tee -a /etc/modules-load.d/uinput.conf
+
+# Add your user to the input group
+sudo usermod -a -G input $USER
+
+# Set proper permissions for uinput device
+sudo tee /etc/udev/rules.d/99-uinput.rules > /dev/null <<EOF
+KERNEL=="uinput", MODE="0660", GROUP="input", OPTIONS+="static_node=uinput"
+EOF
+
+# Reload udev rules
+sudo udevadm control --reload-rules
+```
+
+**Important for Linux users**: After completing the setup, you must **log out and log back in** (or reboot) for the group membership changes to take effect.
+
+### Step 4: Run the Application
+
+```bash
+uv run main.py
+```
+
+You should see output similar to:
+
+```
+2025-07-26 12:21:18,650 - buzz_controller - INFO - Successfully initialized 8 out of 8 virtual gamepads.
+2025-07-26 12:21:18,653 - buzz_controller - INFO - Starting server on 0.0.0.0:5000
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.234:5000
+```
+
+**Note**: You may see a warning about "development server" - this is normal and can be safely ignored since this application is designed for local gaming use.
+
+## PCSX2 Setup Guide
+
+### Prerequisites
+
+- PCSX2 emulator installed and configured
+- Buzz! game ISO
+- This controller application running on the same computer as PCSX2
+- Platform-specific setup completed (see Installation section above)
+
+### Configuration Steps
+
+1. **Start the Buzz! Controller Application**:
+
+   ```bash
+   uv run main.py
+   ```
+
+   You should see a message confirming that 8 virtual gamepads were initialized successfully.
+
+2. **Connect a Mobile Device**:
+
+   - On your mobile device, open a web browser and navigate to `http://<your-ip>:5000`
+   - Select **Player 1** from the interface
+
+3. **Launch PCSX2**: Start PCSX2 after the controller application is running.
+
+4. **Open PCSX2 Controller Settings**:
+
+   - In PCSX2, go to `Settings` → `Controllers`
+   - In the left sidebar, click on `USB Port 1`
+   - From the dropdown, select `Buzz Controller`
+
+5. **Map Player 1 Buttons**:
+
+   - In the PCSX2 interface, click on the **Red** button field for Player 1
+   - On your mobile device, press the **Red (Buzz)** button
+   - Repeat this process for each button:
+     - Click **Blue** in PCSX2 → Press **Blue** on mobile
+     - Click **Orange** in PCSX2 → Press **Orange** on mobile
+     - Click **Green** in PCSX2 → Press **Green** on mobile
+     - Click **Yellow** in PCSX2 → Press **Yellow** on mobile
+
+6. **Configure Additional Players (2-4)**:
+
+   - On the mobile device, switch to **Player 2**
+   - In PCSX2, repeat the button mapping process for Player 2's column
+   - Continue this process for Players 3 and 4
+
+7. **Configure Players 5-8** (if needed):
+
+   - In PCSX2, click on `USB Port 2` in the left sidebar
+   - Select `Buzz Controller` from the dropdown
+   - Have players 5-8 connect on their mobile devices and select their respective player numbers
+   - Repeat the button mapping process for each player in USB Port 2
+
+8. **Save Configuration**: Click `Apply` or `OK` to save your settings.
+
+## Usage
+
+1. **Start the Server**: Run `uv run main.py`
+2. **Launch PCSX2**: Start PCSX2 and load your Buzz! game
+3. **Access the Controller**:
+   - Local access: `http://localhost:5000`
+   - Network access: `http://<your-ip-address>:5000`
+4. **Connect Players**: Each player can connect from their device using a web browser
 
 ## Troubleshooting
 
-### Gamepad & Controller Issues
+### Installation Issues
 
-1.  **"Error initializing gamepads" on startup**:
-    - **Windows**: Ensure the ViGEmBus driver is installed correctly.
-    - **Linux**:
-        - Make sure you have run `sudo modprobe uinput`.
-        - Confirm you have added your user to the `input` group with `sudo usermod -a -G input $USER` and that you have **logged out and back in**.
-        - Run the script with `sudo` as a last resort if permissions are still an issue.
-2.  **PCSX2 does not detect the controllers**:
-    - Make sure you started the Buzz! Controller application **before** opening PCSX2.
-    - In PCSX2 controller settings, ensure the `Device API` is set to `XInput`.
-    - If the controllers still don't appear, try restarting your computer after installing the necessary drivers and setting permissions.
-3.  **Buttons are not responding**:
-    - Verify in the web interface that button presses are being registered (check the server console output).
-    - Double-check the controller mappings in PCSX2 for each player pad.
+**"Error initializing gamepads" on startup**:
+
+- **Windows**: If the driver installation failed during `uv sync`, manually run the installer from the vgamepad package directory
+- **Linux**:
+  - Verify the uinput module is loaded: `lsmod | grep uinput`
+  - Check group membership: `groups` (should include "input")
+  - Ensure you logged out and back in after adding yourself to the input group
+  - As a last resort, try running with `sudo`
+
+### PCSX2 Integration Issues
+
+**Controllers not detected in PCSX2**:
+
+- Ensure the Buzz! Controller application is running **before** starting PCSX2
+- In PCSX2 Controllers settings, verify you've selected `Buzz Controller` in USB Port 1 (and USB Port 2 for players 5-8)
+- Make sure at least one mobile device is connected and has selected a player number
+- Try restarting both applications if the Buzz controller option doesn't appear
+
+**Button mapping not working**:
+
+- Ensure the mobile device shows the player number you're trying to configure in PCSX2
+- Make sure you're clicking the correct button field in PCSX2 before pressing the button on mobile
+- Verify the mobile device is connected to the server (check the server console output for connection messages)
+- Try refreshing the mobile browser page if buttons aren't responding
+
+### Network Issues
+
+**Can't connect from other devices**:
+
+- Ensure all devices are on the same network
+- Check if your firewall is blocking port 5000
+- Try accessing via the server's IP address instead of localhost
+
+## Technical Details
+
+### Button Mapping
+
+The application maps Buzz! controller buttons to Xbox 360 gamepad buttons as follows:
+
+- Red (Buzz) → A Button
+- Blue → X Button
+- Orange → B Button
+- Green → Y Button
+- Yellow → Right Shoulder
+
+### Network Requirements
+
+- Default port: 5000
+- Protocol: HTTP/WebSocket
+- Firewall: Ensure port 5000 is open for local network access
 
 ## Acknowledgments
 
 - Designed specifically for PCSX2 Buzz! games
 - Built with Flask, SocketIO, and `vgamepad`
 - Inspired by the classic Buzz! quiz game series
+
+## Contributing
+
+Issues and pull requests are welcome! Please feel free to contribute to improve this project.
+
+## License
+
+This project is open source. Please check the repository for license details.
