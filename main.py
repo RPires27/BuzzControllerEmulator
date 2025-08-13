@@ -1,7 +1,8 @@
+import time
+
 import vgamepad as vg
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO, emit
-import time
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -19,35 +20,41 @@ try:
     print("Virtual gamepads initialized successfully.")
 except Exception as e:
     print(f"Error initializing gamepads: {e}")
-    print("Please ensure you have installed the necessary drivers and have the correct permissions.")
+    print(
+        "Please ensure you have installed the necessary drivers and have the correct permissions."
+    )
     exit()
 
 # Define the button mappings for an Xbox 360 controller
 button_mapping = {
-    'red': vg.XUSB_BUTTON.XUSB_GAMEPAD_A,
-    'blue': vg.XUSB_BUTTON.XUSB_GAMEPAD_X,
-    'orange': vg.XUSB_BUTTON.XUSB_GAMEPAD_B,
-    'green': vg.XUSB_BUTTON.XUSB_GAMEPAD_Y,
-    'yellow': vg.XUSB_BUTTON.XUSB_GAMEPAD_RIGHT_SHOULDER,
+    "red": vg.XUSB_BUTTON.XUSB_GAMEPAD_A,
+    "blue": vg.XUSB_BUTTON.XUSB_GAMEPAD_X,
+    "orange": vg.XUSB_BUTTON.XUSB_GAMEPAD_B,
+    "green": vg.XUSB_BUTTON.XUSB_GAMEPAD_Y,
+    "yellow": vg.XUSB_BUTTON.XUSB_GAMEPAD_RIGHT_SHOULDER,
 }
 
 # --- Flask Routes ---
 
-@app.route('/')
+
+@app.route("/")
 def index():
-    return render_template('index.html')
+    return render_template("index.html")
+
 
 # --- SocketIO Event Handlers ---
 
-@socketio.on('connect')
+
+@socketio.on("connect")
 def handle_connect():
     """
     When a new client connects, send them the current list of locked players.
     """
     print(f"Client connected: {request.sid}")
-    emit('update_players', locked_players)
+    emit("update_players", locked_players)
 
-@socketio.on('disconnect')
+
+@socketio.on("disconnect")
 def handle_disconnect():
     """
     When a client disconnects, check if they had a player locked.
@@ -59,19 +66,20 @@ def handle_disconnect():
         if sid == request.sid:
             player_to_remove = player_id
             break
-    
+
     if player_to_remove:
         del locked_players[player_to_remove]
         # Notify all clients that the player is now available
-        socketio.emit('update_players', locked_players)
+        socketio.emit("update_players", locked_players)
         print(f"Player {player_to_remove} is now free.")
 
-@socketio.on('select_player')
+
+@socketio.on("select_player")
 def handle_select_player(data):
     """
     Handles a client's request to select and lock a player.
     """
-    player_id = str(data.get('player'))
+    player_id = str(data.get("player"))
     sid = request.sid
 
     # Check if the player_id is valid
@@ -93,22 +101,22 @@ def handle_select_player(data):
         locked_players[player_id] = sid
         print(f"Player {player_id} locked by {sid}")
         # Broadcast the updated player list to all clients
-        socketio.emit('update_players', locked_players)
+        socketio.emit("update_players", locked_players)
     else:
         # If the player was already locked by someone else, send the current state back
         # to the requester to ensure their UI is up-to-date.
-        emit('update_players', locked_players)
+        emit("update_players", locked_players)
         print(f"Player {player_id} is already locked. Request from {sid} denied.")
 
 
-@socketio.on('buzz')
+@socketio.on("buzz")
 def handle_buzz(data):
     """
     Handles a buzz event from a client.
     """
     try:
-        player_id = str(data.get('player'))
-        button_color = data.get('color')
+        player_id = str(data.get("player"))
+        button_color = data.get("color")
         sid = request.sid
 
         # Security check: Ensure the buzz is coming from the client who locked the player
@@ -136,7 +144,9 @@ def handle_buzz(data):
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
 
+
 # --- Cleanup ---
+
 
 def cleanup():
     """
@@ -148,10 +158,11 @@ def cleanup():
         gamepad.update()
     print("Cleanup complete. Exiting.")
 
+
 # --- Main Execution ---
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
-        socketio.run(app, host='0.0.0.0', port=5000)
+        socketio.run(app, host="0.0.0.0", port=5000)
     finally:
         cleanup()
